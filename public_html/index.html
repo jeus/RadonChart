@@ -9,7 +9,7 @@
         </style>
         <script type="text/javascript">
             var chart; // global
-
+            var chart1;
             /**
              * Request data from the server, add it to the graph and set a timeout to request again
              */
@@ -17,14 +17,16 @@
                 $.ajax({
                     url: 'http://192.168.1.107/crms/radon/last',
                     success: function (point) {
-                        var series = chart.series[0], shift = series.data.length > 4; // shift if the series is longer than 150
+                        var series = chart.series[0], shift = series.data.length > 40; // shift if the series is longer than 150
 
                         // add the point
-                        chart.series[0].addPoint(eval(point["radon"]), true, shift);
-                        chart1.series[0].addPoint(eval(point["temp"]), true, shift);
-                        chart1.series[1].addPoint(eval(point["hum"]), true, shift);
+                        chart.series[0].addPoint(eval(point["radon"]), false, shift);
+                        chart1.series[0].addPoint(eval(point["temp"]), false, shift);
+                        chart1.series[1].addPoint(eval(point["hum"]), false, shift);
                         // call it again after one second
                         setTimeout(requestData, 3000);
+                        chart.redraw();
+                        chart1.redraw();
                     },
                     cache: false
                 });
