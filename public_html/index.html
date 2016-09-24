@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Highcharts Example</title>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <style type="text/css">
+        </style>
+        <script type="text/javascript">
+            var chart; // global
+
+            /**
+             * Request data from the server, add it to the graph and set a timeout to request again
+             */
+            function requestData() {
+                $.ajax({
+                    url: 'http://192.168.1.107/crms/radon/last',
+                    success: function (point) {
+                        var series = chart.series[0], shift = series.data.length > 4; // shift if the series is longer than 150
+
+                        // add the point
+                        chart.series[0].addPoint(eval(point["radon"]), true, shift);
+                        chart1.series[0].addPoint(eval(point["temp"]), true, shift);
+                        chart1.series[1].addPoint(eval(point["hum"]), true, shift);
+                        // call it again after one second
+                        setTimeout(requestData, 3000);
+                    },
+                    cache: false
+                });
+            }
+
+
+            $(document).ready(function () {
+                chart = new Highcharts.Chart({
+                    credits: {
+                        enabled: false
+                    },
+                    chart: {
+                        renderTo: 'radonContiner',
+                        defaultSeriesType: 'spline',
+                        events: {
+                            load: requestData
+                        }
+                    },
+                    title: {
+                        text: 'آشکارساز',
+                        style: {
+                            display: 'none'
+                        }
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        tickPixelInterval: 150,
+                        maxZoom: 10 * 1000
+                    },
+                    yAxis: {
+                        minPadding: 0.1,
+                        maxPadding: 0.1,
+                        title: {
+                            text: 'Value',
+                            margin: 0,
+                            style: {
+                                display: 'none'
+                            }
+                        }
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        x: 150,
+                        y: 100,
+                        floating: true,
+                        borderWidth: 1,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+                    },
+                    exporting: {
+                        enabled: false
+                    },
+                    series: [{
+                            name: 'رادون',
+                            data: []
+                        }]
+                });
+                chart1 = new Highcharts.Chart({
+                    credits: {
+                        enabled: false
+                    },
+                    chart: {
+                        renderTo: 'tempHumid',
+                        defaultSeriesType: 'spline',
+                        marginRight: 10,
+                    },
+                    title: {
+                        text: 'Temp',
+                        margin: 0,
+                        style: {
+                            display: 'none'
+                        }
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        tickPixelInterval: 150,
+                        maxZoom: 10 * 1000
+                    },
+                    yAxis: {
+                        minPadding: 0.2,
+                        maxPadding: 0.2,
+                        title: {
+                            text: 'Value',
+                            margin: 0,
+                            style: {
+                                display: 'none'
+                            }
+                        },
+                        plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: '#808080'
+                            }]
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        x: 100,
+                        y: 100,
+                        floating: true,
+                        borderWidth: 1,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+                    },
+                    exporting: {
+                        enabled: true
+                    },
+                    series: [{
+                            name: 'دما',
+                            data: []
+                        },
+                        {
+                            name: 'رطوبت',
+                            data: []
+                        }]
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+        <div id="radonContiner" style="min-width: 310px; height: 250px; margin: 0 auto"></div>
+        <div id="tempHumid" style="min-width: 310px; height: 250px; margin: 0 auto"></div>
+
+    </body>
+</html>
