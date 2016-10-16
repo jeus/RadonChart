@@ -28,8 +28,9 @@
                     success: function (point) {
                         var series = chart.series[0], shift = series.data.length > 40; // shift if the series is longer than 150
 
+
                         // add the point
-                        chart.series[0].addPoint(eval(point["radon"]), false, shift);
+                        chart.series[0].addPoint(eval(point["radon"][0]), false, shift);
                         chart1.series[0].addPoint(eval(point["temp"]), false, shift);
                         chart1.series[1].addPoint(eval(point["hum"]), false, shift);
                         // call it again after one second
@@ -73,6 +74,14 @@
                             style: {
                                 display: 'none'
                             }
+                        }
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return Highcharts.dateFormat('%e-%b [%H:%m:%S]',
+                                    this.point.x) + '<br>Radon:<b>'
+                                    + this.point.y + '</b> <b style="color:red;"> ±Tolerance:'
+                                    + this.point.tolerance+"</b>";
                         }
                     },
                     legend: {
